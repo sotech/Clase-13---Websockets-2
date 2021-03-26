@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 
 //#region Logica
 let dbMensajes = "dbMensajes.txt";
-let archivo = new Archivo(dbMensajes);
+let archivo = new Archivo(path.join(__dirname, dbMensajes));
 let listaMensajes = [];
 
 let listaProductos = [];
