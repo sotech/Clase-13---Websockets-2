@@ -22,7 +22,7 @@
 
 <br>
 
-<div id="template" class = "container bg-dark">
+<div id="template" class="container bg-dark">
     <h2 class='text-primary text-center'>Lista de Productos</h2>
     <div class='container'>
         {{#if hayProductos}}
@@ -55,13 +55,15 @@
 
 <div id="chat" class="container border border-dark">
     <h1 class="text-primary text-center">Centro de Mensajes</h1>
+    <form id="chat-form">
         <input class="form-control" type="text" id="email" placeholder="ejemplo@email.com">
         <br>
-        <div id="chat-messages"></div>
+        <table id="chat-messages"></table>
         <br>
         <input class="form-control" type="text" id="message" placeholder="Ingrese un mensaje...">
         <br>
-        <button class="btn btn-primary" onclick="enviarMensaje()" >Enviar</button>    
+        <button class="btn btn-primary">Enviar</button>
+    </form>
     <br>
 </div>
 
@@ -71,42 +73,32 @@
 <script>
     //CHAT
 
-        //Form
+    //Form
 
-        function enviarMensaje() {
-            let email = document.getElementById('email');
-            let message = document.getElementById('message');
-            //Obtener mail y mensaje, enviarlo al servidor como un objeto
-            let d = new Date();
-            let fecha = obtenerFechaActualFormateada(d);
-            socket.emit('chat-mensaje-enviado', { email: email.value, message: message.value, fecha: fecha });
-            message.value = '';
-        }
+    let formChat = document.getElementById('chat-form');
+    formChat.addEventListener('submit', event => {
+        event.preventDefault();
+        let email = document.getElementById('email');
+        let message = document.getElementById('message');
+        //Obtener mail y mensaje, enviarlo al servidor como un objeto
+        let fecha = obtenerFechaActualFormateada(new Date());
+        socket.emit('chat-mensaje-enviado', { email: email.value, message: message.value, fecha: fecha });
+        message.value = '';
+    })
 
-        function obtenerFechaActualFormateada(d) {
-            return `${d.getDate()}\\${d.getMonth()}\\${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
-        }
+    //Recepcion del mensaje
+    socket.on('chat-nuevo-mensaje', data => {
+        console.log(data);
+        let fila = crearFilaDeMensaje(data.fecha, data.email, data.message);
+        let contenedor = document.getElementById('chat-messages');
+        contenedor.appendChild(fila);
+    });
 
-        //Recepcion del mensaje
-        socket.on('chat-nuevo-mensaje', data => {
-            console.log(data);
-            //Crear nuevo elemento
-            let mensaje = document.createElement('p');
-            let fecha = document.createElement('span');
-            fecha.classList.add('fecha-mensaje');
-            let email = document.createElement('span');
-            email.classList.add('email-mensaje');
-            let message = document.createElement('span');
-            message.classList.add('message-mensaje');
-            fecha.innerHTML = data.fecha;
-            email.innerHTML = data.email;
-            message.innerHTML = data.message;
-            mensaje.appendChild(email);
-            mensaje.innerHTML += " [";
-            mensaje.appendChild(fecha);
-            mensaje.innerHTML += "]: ";
-            mensaje.appendChild(message);
+    socket.on('nuevo-miembro-historial-mensajes', data => {
+        data.forEach(msjH => {
+            let fila = crearFilaDeMensaje(msjH.fecha, msjH.email, msjH.message);
             let contenedor = document.getElementById('chat-messages');
-            contenedor.appendChild(mensaje);
+            contenedor.appendChild(fila);
         });
+    });
 </script>

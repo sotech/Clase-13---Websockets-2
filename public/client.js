@@ -50,3 +50,37 @@ socket.on('nuevoProductoCargado', data => {
     document.getElementById('template').innerHTML = html;
 })
 
+function obtenerFechaActualFormateada(d) {
+    return `${d.getDate()}\\${d.getMonth()}\\${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+}
+
+function crearFilaDeMensaje(_fecha,_email,_mensaje){
+    //Crear nueva fila´
+    let fila = document.createElement('tr');
+    //Crear elementos de la fila 
+    //Email
+    let email = document.createElement('td');
+    email.classList.add('p-3');
+    email.classList.add('font-weight-bold');
+    email.classList.add('text-blue');
+    email.innerHTML = _email;
+    //Fecha
+    let fecha = document.createElement('td');
+    fecha.classList.add('p-3');
+    fecha.classList.add('text-brown');
+    fecha.innerHTML = _fecha;
+    fecha.innerHTML = "[" + fecha.innerHTML + "]:"    
+    //Mensaje
+    let mensaje = document.createElement('td');
+    mensaje.classList.add('p-3');
+    mensaje.classList.add('text-green');
+    mensaje.classList.add('font-italic');    
+    mensaje.innerHTML = _mensaje;
+    //Agregar elementos a la fila
+    fila.appendChild(email);
+    fila.appendChild(fecha);
+    fila.appendChild(mensaje);
+    //Retornar fila
+    return fila;
+}
+

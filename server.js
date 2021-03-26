@@ -1,4 +1,5 @@
 //#region Constantes
+const {Archivo} = require("./archivo");
 const { Producto } = require("./producto");
 const express = require('express');
 const handlebars = require('express-handlebars');
@@ -27,6 +28,10 @@ app.use(express.static(path.join(__dirname, '/public')));
 //#endregion
 
 //#region Logica
+let dbMensajes = "dbMensajes.txt";
+let archivo = new Archivo(dbMensajes);
+let listaMensajes = [];
+
 let listaProductos = [];
 let cantidadClientes = 0;
 function guardarProducto(title, price, thumbnail) {
@@ -50,6 +55,10 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log("Cliente conectado: " + socket.id);
     console.log("Cantidad de clientes: " + ++cantidadClientes);
+    //Mandar array con mensajes y precargarlos
+    archivo.Leer().then(contenido => {
+        socket.emit('nuevo-miembro-historial-mensajes',contenido);
+    })    
     socket.on('productoCargado', data => {
         console.log("Producto cargado");
         guardarProducto(data.title,data.price,data.thumbnail);       
@@ -59,8 +68,13 @@ io.on('connection', (socket) => {
     })
 
     socket.on('chat-mensaje-enviado', data =>{
-        console.log(data);
         //Recibo objeto completo
+        //Guardar mensaje
+        archivo.Leer().then(contenido => {
+            listaMensajes = contenido;
+            listaMensajes.push(data);
+            archivo.Guardar(listaMensajes);
+        })        
         //Reenviar a todos
         io.emit('chat-nuevo-mensaje',data);
     });

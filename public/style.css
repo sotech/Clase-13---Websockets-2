@@ -1,15 +1,13 @@
 /*Mensajes de chat*/
 
-.email-mensaje{
-    font-weight: bold;
-    color:blue;
-}
-
-.fecha-mensaje{
+.text-brown{
     color:brown;
 }
 
-.message-mensaje{
-    font-style: italic;
+.text-blue{
+    color:blue;
+}
+
+.text-green{
     color:green;
 }
