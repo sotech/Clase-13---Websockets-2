@@ -1,0 +1,17 @@
+{
+  "name": "websockets2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "author": "German Sommariva",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^5.2.1",
+    "path": "^0.12.7",
+    "socket.io": "^4.0.0"
+  }
+}

@@ -1,0 +1,112 @@
+<br>
+<div class="container bg-white border border-primary">
+    <h1 class="text-primary text-center">Ingrese Producto</h1>
+    <div>
+        <div class="form-group">
+            <label for="title" class="font-italic font-weight-bold">Nombre</label>
+            <input class="form-control" type="text" name="title" id="title" placeholder="Ingrese un Titulo">
+        </div>
+        <div class="form-group">
+            <label for="price" class="font-italic font-weight-bold">Precio</label>
+            <input class="form-control" type="text" name="price" id="price" placeholder="Ingrese un Precio">
+        </div>
+        <div class="form-group">
+            <label for="thumbnail" class="font-italic font-weight-bold">Foto URL</label>
+            <input class="form-control" type="text" name="thumbnail" id="thumbnail" placeholder="Ingrese una URL">
+        </div>
+        <button class="btn btn-success" onclick="cargarProducto()">Guardar</button>
+        <hr>
+        <h4 id="mensajeProducto"></h4>
+    </div>
+</div>
+
+<br>
+
+<div id="template" class = "container bg-dark">
+    <h2 class='text-primary text-center'>Lista de Productos</h2>
+    <div class='container'>
+        {{#if hayProductos}}
+        <table class='table table-dark'>
+            <thead>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Foto</th>
+            </thead>
+            <tbody>
+                {{#each productos}}
+                <tr>
+                    <td>{{this.title}}</td>
+                    <td>{{this.price}}</td>
+                    <td><img src='{{this.thumbnail}}' width='50px' height='50px'></td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        <div class='container-fluid'>
+            <h2 class='alert alert-danger text-center'>No hay productos cargados</h2>
+        </div>
+        {{/if}}
+    </div>
+    <br>
+</div>
+
+<hr>
+
+<div id="chat" class="container border border-dark">
+    <h1 class="text-primary text-center">Centro de Mensajes</h1>
+        <input class="form-control" type="text" id="email" placeholder="ejemplo@email.com">
+        <br>
+        <div id="chat-messages"></div>
+        <br>
+        <input class="form-control" type="text" id="message" placeholder="Ingrese un mensaje...">
+        <br>
+        <button class="btn btn-primary" onclick="enviarMensaje()" >Enviar</button>    
+    <br>
+</div>
+
+<br>
+
+
+<script>
+    //CHAT
+
+        //Form
+
+        function enviarMensaje() {
+            let email = document.getElementById('email');
+            let message = document.getElementById('message');
+            //Obtener mail y mensaje, enviarlo al servidor como un objeto
+            let d = new Date();
+            let fecha = obtenerFechaActualFormateada(d);
+            socket.emit('chat-mensaje-enviado', { email: email.value, message: message.value, fecha: fecha });
+            message.value = '';
+        }
+
+        function obtenerFechaActualFormateada(d) {
+            return `${d.getDate()}\\${d.getMonth()}\\${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+        }
+
+        //Recepcion del mensaje
+        socket.on('chat-nuevo-mensaje', data => {
+            console.log(data);
+            //Crear nuevo elemento
+            let mensaje = document.createElement('p');
+            let fecha = document.createElement('span');
+            fecha.classList.add('fecha-mensaje');
+            let email = document.createElement('span');
+            email.classList.add('email-mensaje');
+            let message = document.createElement('span');
+            message.classList.add('message-mensaje');
+            fecha.innerHTML = data.fecha;
+            email.innerHTML = data.email;
+            message.innerHTML = data.message;
+            mensaje.appendChild(email);
+            mensaje.innerHTML += " [";
+            mensaje.appendChild(fecha);
+            mensaje.innerHTML += "]: ";
+            mensaje.appendChild(message);
+            let contenedor = document.getElementById('chat-messages');
+            contenedor.appendChild(mensaje);
+        });
+</script>
